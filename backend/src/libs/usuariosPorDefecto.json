@@ -1,0 +1,56 @@
+
+[
+    {
+        "nombre": "admin",
+        "codigo": "1001",
+        "documento": "1001",
+        "celular": "123456789",
+        "activo": true,
+        "grupoFamiliar": "1001",
+        "contra": "admin",
+        "email": "admin@gmail.com",
+        "telefono2": "12345667890",
+        "direccion": "12345667890",
+        "rol":"Administrador"
+    },
+    {
+        "nombre": "Profesor",
+        "codigo": "2001",
+        "documento": "2001",
+        "celular": "123456789",
+        "activo": true,
+        "grupoFamiliar": "2001",
+        "contra": "profe",
+        "email": "profe@gmail.com",
+        "telefono2": "12345667890",
+        "direccion": "12345667890",
+        "color": "cyan",
+        "rol":"Profesor"
+    },
+    {
+        "nombre": "Canchero",
+        "codigo": "3001",
+        "documento": "3001",
+        "celular": "123456789",
+        "activo": true,
+        "grupoFamiliar": "3001",
+        "contra": "canchero",
+        "email": "canchero@gmail.com",
+        "telefono2": "12345667890",
+        "direccion": "12345667890",
+        "rol":"Canchero"
+    },
+    {
+        "nombre": "Socio",
+        "codigo": "4001",
+        "documento": "4001",
+        "celular": "123456789",
+        "activo": true,
+        "grupoFamiliar": "4001",
+        "contra": "socio",
+        "email": "socio@gmail.com",
+        "telefono2": "12345667890",
+        "direccion": "12345667890",
+        "rol":"Socio"
+    }
+]

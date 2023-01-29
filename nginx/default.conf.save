@@ -1,0 +1,75 @@
+#Nginx configuration
+
+#upstream api {
+#    server back:4000;
+#}
+
+#upstream client {
+#    server front:3000;
+#    server back:4000;
+#}
+
+
+#upstream server1 {
+ #   server back:4000; 
+# server name is same as the service name used in docker-compose file
+# port on which the service is running...NOT the exposed port(the RHS port in docker-compose ports attr.)
+#}
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    listen 443 ssl;  
+    server_name localhost;
+    client_max_body_size 0; 
+   
+
+    proxy_set_header X-Real-IP  $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    ssl_certificate     /certs/domain.crt;
+    ssl_certificate_key /certs/domain.key;
+    ssl_password_file /certs/ssl_passwords.txt;
+ 
+location /api/ {
+ 
+  proxy_pass http://back:4000/api/;
+#  proxy_pass http://api/; 
+  proxy_set_header Acess-Control-Allow-Origin *;
+#  proxy_set_header Host $host;
+   proxy_http_version 1.1;
+   proxy_set_header Upgrade $http_upgrade;
+   proxy_set_header Connection 'upgrade';
+   proxy_set_header Host $host;
+   proxy_cache_bypass $http_upgrade;
+}
+ 
+  location / {
+      proxy_pass         http://front:3000;
+  #   proxy_pass http://client/;
+  #   proxy_pass http://api/;
+     proxy_http_version 1.1;
+     proxy_set_header Upgrade $http_upgrade;
+     proxy_set_header Connection 'upgrade';
+     proxy_cache_bypass $http_upgrade
+  #    proxy_redirect     off;
+  #   proxy_set_header Acess-Control-Allow-Origin *;
+ 
+     proxy_set_header   Host $host;
+     proxy_set_header   X-Real-IP $remote_addr;
+     proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+      #proxy_set_header   X-Forwarded-Host $server_name;
+    }
+ #   location /server1 {
+ #       rewrite ^/server1/(.*) /$1 break; # works for both /server1 and /server1/
+ #       proxy_set_header Host $host;
+ #       proxy_set_header X-Real-IP $remote_addr;
+ #       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ #       proxy_set_header X-Forwarded-Proto $scheme; 
+ #       proxy_pass http://server1/;
+#}
+ error_log  /var/log/nginx/error.log;
+ access_log /var/log/nginx/access.log;  
+}
+

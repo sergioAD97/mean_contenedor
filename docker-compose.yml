@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+
+  
+  web:
+    image: nginx:alpine
+    networks: [ citagenda ]
+   # container_name: web
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./etc/ssl:/certs/:ro
+    ports:
+      - "${HTTP_PORT}:80"
+      - "${HTTPS_PORT}:443"
+   # ports:
+   #   - published: ${HTTP_PORT}
+   #     target: ${HTTP_PORT}
+   #     protocol: tcp
+   #     mode: ingress
+    #  - published: ${HTTPS_PORT}
+    #    target: ${HTTPS_PORT}
+    #    protocol: tcp
+    #    mode: ingress
+    restart: always
+    depends_on:
+      - front
+      - back
+
+
+  front:
+#    image: citagendaf:prod
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend-pwa
+    depends_on: [ back ]
+    env_file:
+    - ".env"
+    ports:
+    - "${FRONT_PORT}:4200"
+
+   # ports:
+   # - published: ${FRONT_PORT}
+   #   target: ${FRONT_PORT}
+     # protocol: tcp
+   #   mode: host
+    networks: [ citagenda ]
+    restart: always
+    #volumes:
+    #  - shared:/app/dist
+
+  back:
+ #   image: citagendab:prod
+    build:
+      dockerfile: Dockerfile
+      context: ./backend
+    depends_on: [ database ]
+    ports:
+    - "${BACK_PORT}:4000"
+   # ports:
+   # - published: ${BACK_PORT}
+   #   target: ${BACK_PORT}
+     # protocol: tcp
+   #   mode: host
+    environment:
+      MONGODB_URI: mongodb://database:27017/databaseagenda
+    networks: [ citagenda ]
+    restart: always
+  
+  mongo-ui:
+    image: mongo-express:1.0.0-alpha.4
+    ports:
+    - "${DATA_PORT}:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: database
+      ME_CONFIG_BASICAUTH_USERNAME: username
+      ME_CONFIG_BASICAUTH_PASSWORD: password
+    networks: [ citagenda ]
+    depends_on: [ database ]
+    restart: always
+
+  database:
+    image: mongo:4.4.13
+    ports:
+    - "${MONGO_PORT}:27017"
+    env_file:
+    - ".env"  
+    networks: [ citagenda ]
+    restart: always
+
+  mongo_seed:
+    image: mongo:4.4.13
+#   depends_on: [ database ]
+    depends_on:
+      - database
+    #links:
+    #  - database
+    volumes:
+      - ./mongo-seed:/mongo-seed
+    command:
+      /mongo-seed/import.sh
+    networks: [ citagenda ]
+
+networks:
+  citagenda:

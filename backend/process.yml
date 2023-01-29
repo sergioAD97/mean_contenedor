@@ -1,0 +1,5 @@
+apps:
+- name: citagendab
+  script: ./src/index.js
+  exec_mode: cluster
+  instances: max
